@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Face·Prompt v2.0 — Forensic-Grade AI Image Prompt Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Share+Tech+Mono&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">⬡</div>
+    <div>
+      <div class="logo-text">FACE·PROMPT</div>
+      <div class="logo-sub">Forensic-Grade AI Image Prompt Generator</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="version-badge">▸ v2.0 FORENSIC</div>
+    <div class="header-badge">▸ MIDJOURNEY · STABLE DIFFUSION · DALL·E · FLUX</div>
+  </div>
+</header>
+
+<div class="app-layout">
+
+  <!-- ===== LEFT: CONTROLS ===== -->
+  <aside class="controls-panel">
+    <div class="panel-title">▸ Forensic Character Parameters</div>
+
+    <!-- Quick Presets -->
+    <div class="preset-bar">
+      <button class="preset-btn" data-preset="young-asian-female" onclick="loadPreset('young-asian-female')">👩 Asian F</button>
+      <button class="preset-btn" data-preset="mature-european-male" onclick="loadPreset('mature-european-male')">👨 Euro M</button>
+      <button class="preset-btn" data-preset="african-male-portrait" onclick="loadPreset('african-male-portrait')">👨 African M</button>
+      <button class="preset-btn" data-preset="elderly-asian-female" onclick="loadPreset('elderly-asian-female')">👵 Elderly F</button>
+      <button class="preset-btn" data-preset="punk-young-male" onclick="loadPreset('punk-young-male')">🎸 Punk M</button>
+    </div>
+
+    <!-- Category 1: Dasar -->
+    <div class="category open" id="cat-dasar">
+      <div class="category-header" onclick="toggleCat('cat-dasar')">
+        <span class="cat-icon">👤</span>
+        <span class="cat-label">DASAR</span>
+        <span class="cat-count">4 params</span>
+        <span class="cat-arrow">▾</span>
+      </div>
+      <div class="category-body">
+        <div class="ctrl-group">
+          <div class="ctrl-label">
+            <span>Gender</span>
+            <span class="ctrl-value" id="val-gender">Pria</span>
+          </div>
+          <select id="gender" onchange="update()">
+            <option value="male">Pria</option>
+            <option value="female">Wanita</option>
+            <option value="androgynous">Androgini</option>
+          </select>
+        </div>
+        <div class="ctrl-group">
+          <div class="ctrl-label">
+            <span>Usia</span>
+            <span class="ctrl-value" id="val-age">30 tahun</span>
+          </div>
+          <input type="range" id="age" min="18" max="80" value="30" oninput="update()">
+          <div class="slider-labels"><span>18</span><span>80</span></div>
+        </div>
+        <div class="ctrl-group">
+          <div class="ctrl-label"><span>Warna Kulit</span></div>
+          <select id="skin-tone-select" onchange="selectSkinTone(this.value)" style="display:none;">
+            <option value="fair">Fair</option>
+            <option value="light">Light</option>
+            <option value="medium" selected>Medium</option>
+            <option value="olive">Olive</option>
+            <option value="tan">Tan</option>
+            <option value="brown">Brown</option>
+            <option value="dark">Dark</option>
+            <option value="deep-dark">Deep Dark</option>
+          </select>
+          <div class="skin-tone-row">
+            <div class="skin-tone-btn" data-tone="fair" style="background:#f5d6b8;" onclick="selectSkinTone('fair')"></div>
+            <div class="skin-tone-btn" data-tone="light" style="background:#e8c49a;" onclick="selectSkinTone('light')"></div>
+            <div class="skin-tone-btn active" data-tone="medium" style="background:#c8956a;" onclick="selectSkinTone('medium')"></div>
+            <div class="skin-tone-btn" data-tone="olive" style="background:#b8885a;" onclick="selectSkinTone('olive')"></div>
+            <div class="skin-tone-btn" data-tone="tan" style="background:#a07040;" onclick="selectSkinTone('tan')"></div>
+            <div class="skin-tone-btn" data-tone="brown" style="background:#8a5830;" onclick="selectSkinTone('brown')"></div>
+            <div class="skin-tone-btn" data-tone="dark" style="background:#6a4020;" onclick="selectSkinTone('dark')"></div>
+            <div class="skin-tone-btn" data-tone="deep-dark" style="background:#4a2810;" onclick="selectSkinTone('deep-dark')"></div>
+          </div>
+        </div>
+        <div class="ctrl-group">
+          <div class="ctrl-label"><span>Ekspresi</span></div>
+          <select id="expression" onchange="update()">
+            <option value="neutral expression">Netral</option>
+            <option value="slight smile">Senyum Tipis</option>
+            <option value="broad smile">Senyum Lebar</option>
+            <option value="serious expression">Serius</option>
+            <option value="stern look">Tegas</option>
+            <option value="contemplative look">Berpikir</option>
+            <option value="melancholic expression">Melankolis</option>
+            <option value="confident smirk">Smug</option>
+            <option value="surprised expression">Terkejut</option>
+            <option value="angry expression">Marah</option>
+            <option value="fearful expression">Takut</option>
+            <option value="disgusted look">Jijik</option>
+            <option value="playful expression">Main-main</option>
+            <option value="mysterious smile">Misterius</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Category 2: Bentuk Wajah -->
+    <div class="category open" id="cat-face">
+      <div class="category-header" onclick="toggleCat('cat-face')">
+        <span class="cat-icon">🔷</span>
+        <span class="cat-label">BENTUK WAJAH</span>
+        <span class="cat-count">3 params</span>
+        <span class="cat-arrow">▾</span>
+      </div>
+      <div class="category-body">
+        <div class="ctrl-group">
+          <div class="ctrl-label"><span>Preset Wajah</span></div>
+          <select id="face-shape" onchange="selectFaceShape(this.value)">
+            <option value="custom">Custom</option>
+            <option value="oval">Oval</option>
+            <option value="round">Round</option>
+            <option value="square">Square</option>
+            <option value="heart">Heart</option>
+            <option value="oblong">Oblong</option>
+            <option value="diamond">Diamond</option>
+            <option value="triangular">Triangular</option>
+          </select>
+          <div class="skin-tone-row" style="margin-top:6px;">
+            <button class="face-shape-btn preset-btn" data-shape="oval" onclick="selectFaceShape('oval')">Oval</button>
+            <button class="face-shape-btn preset-btn" data-shape="round" onclick="selectFaceShape('round')">Round</button>
+            <button class="face-shape-btn preset-btn" data-shape="square" onclick="selectFaceShape('square')">Square</button>
+            <button class="face-shape-btn preset-btn" data-shape="heart" onclick="selectFaceShape('heart')">Heart</button>
+            <button class="face-shape-btn preset-btn" data-shape="diamond" onclick="selectFaceShape('diamond')">Diamond</button>
+          </div>
+        </div>
+        <div class="ctrl-group">
+          <div class="ctrl-label">
+            <span>Lebar Wajah</span>
+            <span class="ctrl-value" id="val-facewidth">Sedang</span>
+          </div>
+          <input type="range" id="facewidth" min="0" max="100" value="50" oninput="update()">
+          <div class="slider-labels"><span>Sempit</span><span>Lebar</span></div>
+        </div>
+        <div class="ctrl-group">
+          <div class="ctrl-label">
+            <span>Rahang</span>
+            <span class="ctrl-value" id="val-jaw">Sedang</span>
+          </div>
+          <input type="range" id="jaw" min="0" max="100" value="50" oninput="update()">
+          <div class="slider-labels"><span>Lembut</span><span>Tajam</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Category 3: Mata -->
+    <div class="category open" id="cat-eyes">
+      <div class="category-header" onclick="toggleCat('cat-eyes')">
+        <span class="cat-icon">👁</span>
+        <span class="cat-label">MATA</span>
+        <span class="cat-count">4 params</span>
+        <span class="cat-arrow">▾</span>
+      </div>
+      <div class="category-body">
+        <div class="ctrl-group">
+          <div class="ctrl-label"><span>Bentuk Mata</span></div>
+          <select id="eyeshape" onchange="update()">
+            <option value="round">Bulat</option>
+            <option value="almond-shaped">Almond</option>
+            <option value="narrow">Sipit</option>
+            <option value="hooded">Hooded</option>
+            <option value="monolid">Monolid</option>
+            <option value="upturned">Upturned</option>
+            <option value="downturned">Downturned</option>
+            <option value="deep-set">Deep-set</option>
+            <option value="wide-set">Wide-set</option>
+            <option value="close-set">Close-set</option>
+          </select>
+        </div>
+        <div class="ctrl-group">
+          <div class="ctrl-label"><span>Warna Mata</span></div>
+          <select id="eyecolor" onchange="update()">
+            <option value="brown">Coklat</option>
+            <option value="dark brown">Coklat Tua</option>
+            <option value="amber">Amber</option>
+            <option value="blue">Biru</option>
+            <option value="light blue">Biru Muda</option>
+            <option value="green">Hijau</option>
+            <option value="gray">Abu-abu</option>
+            <option value="hazel">Hazel</option>
+            <option value="black">Hitam</option>
+            <option value="heterochromia">Heterochromia</option>
+          </select>
+        </div>
+        <div class="ctrl-group">
+          <div class="ctrl-label">
+            <span>Jarak Mata</span>
+            <span class="ctrl-value" id="val-eyedist">Sedang</span>
+          </div>
+          <input type="range" id="eyedist" min="0" max="100" value="50" oninput="update()">
+          <div class="slider-labels"><span>Dekat</span><span>Jauh</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Category 4: Hidung & Mulut -->
+    <div class="category open" id="cat-nose">
+      <div class="category-header" onclick="toggleCat('cat-nose')">
+        <span class="cat-icon">👃</span>
+        <span class="cat-label">HIDUNG &amp; MULUT</span>
+        <span class="cat-count">2 params</span>
+        <span class="cat-arrow">▾</span>
+      </div>
+      <div class="category-body">
+        <div class="ctrl-group">
+          <div class="ctrl-label">
+            <span>Ukuran Hidung</span>
+            <span class="ctrl-value" id="val-nose">Sedang</span>
+          </div>
+          <input type="range" id="nose" min="0" max="100" value="50" oninput="update()">
+          <div class="slider-labels"><span>Kecil</span><span>Besar</span></div>
+        </div>
+        <div class="ctrl-group">
+          <div class="ctrl-label">
+            <span>Ketebalan Bibir</span>
+            <span class="ctrl-value" id="val-lips">Sedang</span>
+          </div>
+          <input type="range" id="lips" min="0" max="100" value="50" oninput="update()">
+          <div class="slider-labels"><span>Tipis</span><span>Tebal</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Category 5: Rambut -->
+    <div class="category open" id="cat-hair">
+      <div class="category-header" onclick="toggleCat('cat-hair')">
+        <span class="cat-icon">💇</span>
+        <span class="cat-label">RAMBUT</span>
+        <span class="cat-count">3 params</span>
+        <span class="cat-arrow">▾</span>
+      </div>
+      <div class="category-body">
+        <div class="ctrl-group">
+          <div class="ctrl-label"><span>Gaya Rambut</span></div>
+          <select id="hairstyle" onchange="update()">
+            <option value="short hair">Pendek</option>
+            <option value="very short buzz cut">Sangat Pendek</option>
+            <option value="medium-length hair">Sedang</option>
+            <option value="shoulder-length hair">Sebahu</option>
+            <option value="long flowing hair">Panjang</option>
+            <option value="very long hair">Sangat Panjang</option>
+            <option value="pixie cut">Pixie Cut</option>
+            <option value="bob cut">Bob Cut</option>
+            <option value="curly hair">Keriting</option>
+            <option value="wavy hair">Bergelombang</option>
+            <option value="afro">Afro</option>
+            <option value="dreadlocks">Dreadlocks</option>
+            <option value="braided hair">Kepang</option>
+            <option value="ponytail">Kuncir Kuda</option>
+            <option value="bun">Sanggul</option>
+            <option value="side-parted hair">Belah Samping</option>
+            <option value="slicked-back hair">Slicked Back</option>
+            <option value="mohawk">Mohawk</option>
+            <option value="undercut">Undercut</option>
+            <option value="bald">Botak</option>
+            <option value="shaved sides">Shaved Sides</option>
+            <option value="man bun">Man Bun</option>
+          </select>
+        </div>
+        <div class="ctrl-group">
+          <div class="ctrl-label"><span>Warna Rambut</span></div>
+          <select id="haircolor" onchange="update()">
+            <option value="black">Hitam</option>
+            <option value="dark brown">Coklat Tua</option>
+            <option value="medium brown">Coklat Sedang</option>
+            <option value="light brown">Coklat Muda</option>
+            <option value="auburn">Auburn</option>
+            <option value="red">Merah</option>
+            <option value="strawberry blonde">Strawberry Blonde</option>
+            <option value="blonde">Pirang</option>
+            <option value="platinum blonde">Platinum</option>
+            <option value="white silver">Putih/Perak</option>
+            <option value="gray">Abu-abu</option>
+            <option value="blue">Biru</option>
+            <option value="pink">Pink</option>
+            <option value="purple">Ungu</option>
+            <option value="green">Hijau</option>
+            <option value="ombre">Ombre</option>
+            <option value="highlights">Highlights</option>
+          </select>
+        </div>
+        <div class="ctrl-group">
+          <div class="ctrl-label"><span>Jenggot / Kumis</span></div>
+          <select id="facialhair" onchange="update()">
+            <option value="none">Tidak Ada</option>
+            <option value="stubble">Stubble</option>
+            <option value="short beard">Jenggot Pendek</option>
+            <option value="full beard">Jenggot Penuh</option>
+            <option value="long beard">Jenggot Panjang</option>
+            <option value="goatee">Goatee</option>
+            <option value="mustache">Kumis</option>
+            <option value="handlebar mustache">Kumis Handlebar</option>
+            <option value="van dyke beard">Van Dyke</option>
+            <option value="chin strap beard">Chin Strap</option>
+            <option value="mutton chops">Mutton Chops</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Category 6: Aksesoris -->
+    <div class="category" id="cat-accessories">
+      <div class="category-header" onclick="toggleCat('cat-accessories')">
+        <span class="cat-icon">👓</span>
+        <span class="cat-label">AKSESORIS</span>
+        <span class="cat-count">1 param</span>
+        <span class="cat-arrow">▾</span>
+      </div>
+      <div class="category-body">
+        <div class="ctrl-group">
+          <div class="ctrl-label"><span>Aksesoris</span></div>
+          <select id="accessories" onchange="update()">
+            <option value="none">Tidak Ada</option>
+            <option value="round glasses">Kacamata Bulat</option>
+            <option value="rectangular glasses">Kacamata Kotak</option>
+            <option value="aviator sunglasses">Aviator</option>
+            <option value="wayfarer sunglasses">Wayfarer</option>
+            <option value="reading glasses">Kacamata Baca</option>
+            <option value="rimless glasses">Rimless</option>
+            <option value="earrings">Anting</option>
+            <option value="nose ring">Cincin Hidung</option>
+            <option value="lip ring">Cincin Bibir</option>
+            <option value="eyebrow piercing">Piercing Alis</option>
+            <option value="headband">Headband</option>
+            <option value="beanie hat">Beanie</option>
+            <option value="baseball cap">Topi Baseball</option>
+            <option value="fedora hat">Fedora</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Category 7: Teknis / Kamera -->
+    <div class="category" id="cat-technical">
+      <div class="category-header" onclick="toggleCat('cat-technical')">
+        <span class="cat-icon">📷</span>
+        <span class="cat-label">TEKNIS KAMERA</span>
+        <span class="cat-count">5 params</span>
+        <span class="cat-arrow">▾</span>
+      </div>
+      <div class="category-body">
+        <div class="ctrl-group">
+          <div class="ctrl-label"><span>Pencahayaan</span></div>
+          <select id="lighting" onchange="update()">
+            <option value="studio lighting with soft key light">Studio Soft</option>
+            <option value="dramatic Rembrandt lighting">Rembrandt</option>
+            <option value="butterfly lighting">Butterfly</option>
+            <option value="split lighting">Split</option>
+            <option value="rim lighting with dark background">Rim Light</option>
+            <option value="natural window light">Window Light</option>
+            <option value="golden hour warm sunlight">Golden Hour</option>
+            <option value="overcast soft diffused light">Overcast</option>
+            <option value="harsh directional light with deep shadows">Harsh</option>
+            <option value="neon colored lighting">Neon</option>
+            <option value="candlelight warm glow">Candlelight</option>
+            <option value="moonlight cool tones">Moonlight</option>
+            <option value="high-key lighting minimal shadows">High-key</option>
+            <option value="low-key chiaroscuro lighting">Chiaroscuro</option>
+            <option value="backlit silhouette edge light">Backlit</option>
+          </select>
+        </div>
+        <div class="ctrl-group">
+          <div class="ctrl-label"><span>Sudut Kamera</span></div>
+          <select id="camera-angle" onchange="update()">
+            <option value="straight-on eye-level shot">Eye Level</option>
+            <option value="slightly elevated angle">Slight High</option>
+            <option value="low angle looking up">Low Angle</option>
+            <option value="bird's eye view from above">Bird's Eye</option>
+            <option value="three-quarter view">3/4 View</option>
+            <option value="profile side view">Profile</option>
+            <option value="close-up face shot">Close-up</option>
+            <option value="medium shot from chest up">Medium Shot</option>
+            <option value="Dutch angle tilted">Dutch Angle</option>
+            <option value="over-the-shoulder perspective">OTS</option>
+          </select>
+        </div>
+        <div class="ctrl-group">
+          <div class="ctrl-label"><span>Background</span></div>
+          <select id="background" onchange="update()">
+            <option value="plain dark background">Dark Plain</option>
+            <option value="plain white studio background">White Studio</option>
+            <option value="gradient gray background">Gray Gradient</option>
+            <option value="blurred urban city background">Urban Blur</option>
+            <option value="blurred nature forest background">Forest Blur</option>
+            <option value="abstract bokeh lights background">Bokeh</option>
+            <option value="textured concrete wall background">Concrete</option>
+            <option value="vintage sepia toned background">Vintage</option>
+            <option value="dark moody atmospheric background">Moody Dark</option>
+            <option value="colorful gradient background">Colorful</option>
+          </select>
+        </div>
+        <div class="ctrl-group">
+          <div class="ctrl-label"><span>Lensa Kamera</span></div>
+          <select id="camera" onchange="update()">
+            <option value="85mm f/1.4 prime lens, shallow depth of field">85mm f/1.4</option>
+            <option value="50mm f/1.8 standard lens, natural perspective">50mm f/1.8</option>
+            <option value="135mm f/2 telephoto lens, compressed bokeh">135mm f/2</option>
+            <option value="35mm f/1.4 wide-angle lens, environmental shot">35mm f/1.4</option>
+            <option value="105mm f/2.8 macro lens, extreme detail">105mm Macro</option>
+            <option value="24-70mm f/2.8 zoom lens, versatile framing">24-70mm</option>
+            <option value="Hasselblad medium format, studio quality">Hasselblad</option>
+            <option value="Leica M rangefinder, classic rendering">Leica M</option>
+            <option value="large format 4x5 film camera, ultra detail">4x5 Film</option>
+          </select>
+        </div>
+        <div class="ctrl-group">
+          <div class="ctrl-label"><span>Gaya Gambar</span></div>
+          <select id="image-style" onchange="update()">
+            <option value="photorealistic, hyperrealistic photography">Hyperrealistic</option>
+            <option value="professional studio portrait photography">Studio Portrait</option>
+            <option value="editorial fashion photography">Editorial</option>
+            <option value="cinematic film still">Cinematic</option>
+            <option value="documentary style candid photography">Documentary</option>
+            <option value="fine art portrait painting">Fine Art</option>
+            <option value="oil painting classical style">Oil Painting</option>
+            <option value="watercolor soft artistic style">Watercolor</option>
+            <option value="pencil sketch detailed drawing">Pencil Sketch</option>
+            <option value="charcoal drawing dramatic style">Charcoal</option>
+            <option value="digital art concept art style">Concept Art</option>
+            <option value="anime cel-shaded style">Anime</option>
+            <option value="comic book illustration style">Comic Book</option>
+            <option value="pop art bold colors style">Pop Art</option>
+            <option value="noir black and white photography">Noir B&W</option>
+            <option value="retro 1970s film grain photography">Retro 70s</option>
+            <option value="cyberpunk neon-lit futuristic style">Cyberpunk</option>
+            <option value="fantasy ethereal glowing style">Fantasy</option>
+          </select>
+        </div>
+        <div class="ctrl-group">
+          <div class="ctrl-label"><span>Kualitas Output</span></div>
+          <select id="quality" onchange="update()">
+            <option value="standard">Standard</option>
+            <option value="high">High</option>
+            <option value="ultra" selected>Ultra</option>
+            <option value="maximum">Maximum (Forensic)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Face Preview Canvas -->
+    <div class="face-preview-box" style="margin-top:8px;">
+      <span class="face-preview-label">◈ Forensic Face Preview</span>
+      <span class="face-preview-size">300×360px</span>
+      <canvas id="face-canvas" width="300" height="360" style="background: #0a1220; border-radius: 6px; border: 1px solid rgba(0,212,255,0.1);"></canvas>
+    </div>
+
+  </aside>
+
+  <!-- ===== RIGHT: OUTPUT ===== -->
+  <main class="output-panel">
+
+    <div class="output-header">
+      <div>
+        <div class="output-title"><span class="live-dot"></span>GENERATED PROMPT</div>
+      </div>
+      <div class="output-meta" id="word-count">0 WORDS · 0 CHARS</div>
+    </div>
+
+    <!-- Format Tabs -->
+    <div class="format-tabs">
+      <button class="format-tab active" data-format="paragraph" onclick="setPromptFormat('paragraph')">Paragraph</button>
+      <button class="format-tab" data-format="comma" onclick="setPromptFormat('comma')">Comma-separated</button>
+      <button class="format-tab" data-format="tags" onclick="setPromptFormat('tags')">[Tag] Format</button>
+      <button class="format-tab" data-format="json" onclick="setPromptFormat('json')">JSON Array</button>
+    </div>
+
+    <div class="prompt-wrapper">
+      <div class="prompt-bg"></div>
+      <div class="scan-line"></div>
+      <div class="corner tl"></div>
+      <div class="corner tr"></div>
+      <div class="corner bl"></div>
+      <div class="corner br"></div>
+      <textarea id="prompt-output" readonly spellcheck="false" placeholder="Atur parameter di kiri untuk menghasilkan prompt forensik..."></textarea>
+    </div>
+
+    <div>
+      <div style="font-family:'Share Tech Mono',monospace;font-size:0.6rem;color:var(--text-muted);letter-spacing:0.15em;margin-bottom:10px;">◈ KEYWORD BREAKDOWN</div>
+      <div class="tags-row" id="tags-row"></div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-copy" id="copy-btn" onclick="copyPrompt()">
+        <span id="copy-icon">⧉</span>
+        <span id="copy-text">COPY TO CLIPBOARD</span>
+      </button>
+      <button class="btn-random" onclick="randomFace()">🎲 Random</button>
+      <button class="btn-reset" onclick="resetAll()">↺ Reset</button>
+      <span class="char-count" id="char-count-badge"></span>
+    </div>
+
+  </main>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">✓ Prompt berhasil disalin!</div>
+
+<script src="app.js"></script>
+</body>
+</html>
