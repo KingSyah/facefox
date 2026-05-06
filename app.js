@@ -1,5 +1,5 @@
 /* ===== FACE·PROMPT GENERATOR v2.1 ===== */
-/* Forensic-Grade AI Image Prompt Generator */
+/* Forensic-Grade AI Image Prompt Generator  */
 
 // ===== MAPPING DATA =====
 
