@@ -1509,22 +1509,74 @@ function drawFacialHair(ctx, cx, faceCY, faceRx, faceRy, chinY, mouthY, style, h
     ctx.restore();
   }
 
-  // Mustache
+  // Mustache — two separate sides with philtrum gap
   if (['mustache', 'handlebar mustache', 'van dyke beard'].includes(style)) {
-    const mustW = faceRx * (style === 'handlebar mustache' ? 0.58 : 0.42);
-    ctx.beginPath();
-    ctx.moveTo(cx - mustW, mouthY - 7);
-    ctx.bezierCurveTo(cx - mustW*0.5, mouthY - 11, cx + mustW*0.5, mouthY - 11, cx + mustW, mouthY - 7);
-    ctx.bezierCurveTo(cx + mustW*0.5, mouthY - 3, cx - mustW*0.5, mouthY - 3, cx - mustW, mouthY - 7);
-    ctx.fillStyle = hc.base + '99';
-    ctx.fill();
+    const mouthHalfW = faceRx * 0.52; // matches mouth width
+    const mustW = mouthHalfW * (style === 'handlebar mustache' ? 1.1 : 0.85);
+    const mustThick = 5; // thickness of the mustache
+    const gapW = 5; // philtrum gap between left and right
 
+    for (const side of [-1, 1]) {
+      ctx.beginPath();
+      // Start from center gap
+      const startX = cx + side * gapW;
+      const endX = cx + side * mustW;
+      const topY = mouthY - 9;
+      const botY = mouthY - 4;
+
+      ctx.moveTo(startX, topY + 1);
+      // Top edge — curves up then down
+      ctx.bezierCurveTo(
+        startX + side * mustW * 0.3, topY - 2,
+        endX - side * mustW * 0.15, topY - 1,
+        endX, topY + 2
+      );
+      // Outer tip — droop down slightly
+      ctx.quadraticCurveTo(endX + side * 2, topY + 4, endX - side * 2, botY);
+      // Bottom edge — back to center
+      ctx.bezierCurveTo(
+        endX - side * mustW * 0.2, botY + 1,
+        startX + side * mustW * 0.15, botY,
+        startX, botY - 1
+      );
+      ctx.closePath();
+
+      // Gradient for volume
+      const mGrad = ctx.createLinearGradient(cx, topY, cx, botY);
+      mGrad.addColorStop(0, hc.base + 'cc');
+      mGrad.addColorStop(0.5, hc.mid + 'bb');
+      mGrad.addColorStop(1, hc.base + '88');
+      ctx.fillStyle = mGrad;
+      ctx.fill();
+
+      // Hair stroke texture
+      for (let i = 0; i < 4; i++) {
+        const t = 0.2 + i * 0.2;
+        const sx = startX + side * (mustW - gapW) * t;
+        const sy = topY + (botY - topY) * 0.4;
+        ctx.beginPath();
+        ctx.moveTo(sx, sy);
+        ctx.lineTo(sx + side * 3, sy + 2);
+        ctx.strokeStyle = hc.hi + '44';
+        ctx.lineWidth = 0.7;
+        ctx.stroke();
+      }
+    }
+
+    // Handlebar curl ends
     if (style === 'handlebar mustache') {
       for (const side of [-1, 1]) {
+        const tipX = cx + side * mustW;
         ctx.beginPath();
-        ctx.arc(cx + side * mustW * 1.15, mouthY - 5, 6, 0, Math.PI * 1.2);
-        ctx.strokeStyle = hc.base + '88';
-        ctx.lineWidth = 2.5;
+        ctx.moveTo(tipX, mouthY - 6);
+        ctx.bezierCurveTo(
+          tipX + side * 8, mouthY - 10,
+          tipX + side * 12, mouthY - 4,
+          tipX + side * 10, mouthY + 1
+        );
+        ctx.strokeStyle = hc.base + 'aa';
+        ctx.lineWidth = 3;
+        ctx.lineCap = 'round';
         ctx.stroke();
       }
     }
