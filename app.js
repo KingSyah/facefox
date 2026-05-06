@@ -519,7 +519,7 @@ function buildForensicPrompt(p) {
   const accessoryDesc = p.accessories === 'none' ? '' : 'wearing ' + p.accessories;
 
   const parts = [];
-  parts.push(`A portrait of a ${ageStr}`);
+  parts.push(ageStr);
   parts.push(skinDesc);
   parts.push(faceShapeDesc + ' with ' + jawStr);
   parts.push(`${eyeShapeDesc} ${eyeColorDesc}, ${eyedistStr}`);
@@ -544,7 +544,7 @@ function buildForensicPrompt(p) {
   const qPreset = QUALITY_PRESETS.find(q => q.value === p.quality) || QUALITY_PRESETS[2];
   parts.push(qPreset.tags);
 
-  const paragraph = 'A portrait of a ' + parts.slice(1).join(', ') + '.';
+  const paragraph = 'A portrait of a ' + parts.join(', ') + '.';
 
   const tags = [
     { text: ageStr, cls: 'tag-blue' },
